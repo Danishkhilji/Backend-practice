@@ -1,6 +1,7 @@
 let pool = require("../config/db")
 // let {io,app} = require('../index')
 // let app = require('../index').app;
+let {getIO}  = require('../config/socket')
 exports.createTask = (req, res) => {
     try {
         let { title, description, status } = req.body
@@ -8,7 +9,7 @@ exports.createTask = (req, res) => {
         let query = 'INSERT INTO tasks (title, description, status) VALUES (?, ?, ?)'
         pool.query(query, [title, description, status], (error, result) => {
             if (error) throw error
-            // io.emit("newTask",{title, description, status})
+            getIO().emit("newTask",{title, description, status})
             // app.get('io').emit("newTask", { title, description, status });
 
             return res.status(201).json({ messae: "Task has been created", result })
@@ -63,6 +64,7 @@ exports.deleteTask = (req,res)=>{
             if (result.affectedRows === 0) {
                 return res.status(404).json({ message: "Task not found" });
             }
+            getIO().emit("deleteTask", { id });
             return res.status(200).json({message:"task has been deleted",result})
         })    
         

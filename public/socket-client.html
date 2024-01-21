@@ -1,0 +1,38 @@
+<!-- Update your socket-client.html file -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO Client</title>
+</head>
+<body>
+    <ul id="taskList"></ul>
+
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    <script>
+        const socket = io("http://localhost:5000"); // Use HTTP for WebSocket connection
+        const taskList = document.getElementById("taskList");
+
+        socket.on("newTask", (data) => {
+            console.log("Received newTask event:", data);
+
+            // Append new task to the list
+            const listItem = document.createElement("li");
+            listItem.textContent = `Title: ${data.title}, Description: ${data.description}, Status: ${data.status}`;
+            taskList.appendChild(listItem);
+        });
+
+        socket.on("deleteTask", (data) => {
+            console.log("Received deleteTask event:", data);
+
+            // Remove the deleted task from the list
+            const deletedTask = document.getElementById(data.id);
+            if (deletedTask) {
+                taskList.removeChild(deletedTask);
+            }
+        });
+    </script>
+</body>
+</html>

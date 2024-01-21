@@ -1,26 +1,23 @@
 let express = require("express");
-let socketIO = require("socket.io")
-let http = require("http")
+const path = require("path"); // Import the path module
 
 let app = express();
-let server = http.createServer(app)
-
 app.use(express.json())
 
-let io = socketIO(server)
-app.use((req, res, next) => {
-    app.set('io', io);
-    next();
-  });
-let taskRoute = require("./routes/task"); 
-app.use("/api/",taskRoute )
 
-io.on('connection',(socket)=>{
-    console.log("A user has been connected")
-})
+app.use('/public', express.static(path.join(__dirname, 'public')));
+
+app.get('/socket-client', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'socket-client.html'));
+});
+
 let port =5000
-app.listen(port,()=>{
+let server = app.listen(port,()=>{
     console.log("Server running on port :", port)
 })
+ 
+let io = require('./config/socket')
+io.init(server)
 
-module.exports = { io,app};
+let taskRoute = require("./routes/task"); 
+app.use("/api/",taskRoute )
