@@ -1,5 +1,5 @@
 let express = require("express");
-const path = require("path"); // Import the path module
+const path = require("path"); 
 
 let app = express();
 app.use(express.json())

@@ -1,6 +1,4 @@
 let pool = require("../config/db")
-// let {io,app} = require('../index')
-// let app = require('../index').app;
 let {getIO}  = require('../config/socket')
 exports.createTask = (req, res) => {
     try {
@@ -10,8 +8,6 @@ exports.createTask = (req, res) => {
         pool.query(query, [title, description, status], (error, result) => {
             if (error) throw error
             getIO().emit("newTask",{title, description, status})
-            // app.get('io').emit("newTask", { title, description, status });
-
             return res.status(201).json({ messae: "Task has been created", result })
         })
     } catch (error) {
@@ -46,6 +42,7 @@ exports.updateTask = (req,res)=>{
             if (result.affectedRows === 0) {
                 return res.status(404).json({ message: "Task not found" });
             }
+            getIO().emit("updatedTask", { id });
             return res.status(200).json({message:"data has been updated",result})
         })    
     }catch(error){
